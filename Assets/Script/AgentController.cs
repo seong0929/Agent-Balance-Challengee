@@ -7,10 +7,12 @@ public class AgentController : MonoBehaviour
 
     private Rigidbody rb;
     private Vector2 movementInput;
+    private RewardSystem rewardSystem;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rewardSystem = GetComponent<RewardSystem>(); // RewardSystem 스크립트를 가져옵니다.
     }
 
     private void FixedUpdate()
@@ -22,7 +24,14 @@ public class AgentController : MonoBehaviour
         rb.MovePosition(newPosition);
     }
 
-    private void OnMove(InputValue value)
+    private void OnTriggerEnter(Collider other)
+    {
+        // 충돌 이벤트 처리 로직을 구현합니다.
+        // 땅과의 충돌이나 다른 객체와의 상호작용을 처리할 수 있습니다.
+        rewardSystem.AddReward(0.1f); // 충돌 시 0.1의 보상을 RewardSystem에 전달합니다.
+    }
+
+    private void OnMove(InputValue value)   //InputSystem으로 키입력을 받는 함수
     {
         movementInput = value.Get<Vector2>();
     }

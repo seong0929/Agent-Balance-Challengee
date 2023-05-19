@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class RLAlgorithm : MonoBehaviour
 {
@@ -8,11 +9,15 @@ public class RLAlgorithm : MonoBehaviour
     private int currentState;
     private int currentAction;
 
+    public TMP_Text rewardText; // UI Text(TMP) 참조
+
     private void Awake()
     {
         rewardSystem = GetComponent<RewardSystem>();
-        qTable = new QTable(0, 0);// stateCount, actionCount
+        qTable = new QTable(0, 0); // stateCount, actionCount
         currentState = 0;
+
+        rewardText = GetComponent<TMP_Text>(); // rewardText 할당
     }
 
     private void Update()
@@ -25,7 +30,7 @@ public class RLAlgorithm : MonoBehaviour
         bool success = GetActionResult();
 
         // 보상을 계산합니다.
-        float reward = rewardSystem.GetReward(success);
+        float reward = rewardSystem.GetReward();
 
         // 다음 상태의 최적 행동을 업데이트합니다.
         int nextState = GetNextState();
@@ -35,6 +40,9 @@ public class RLAlgorithm : MonoBehaviour
 
         // 다음 상태로 전환합니다.
         currentState = nextState;
+
+        // 보상 값을 UI Text(TMP)에 할당하여 표시합니다.
+        rewardText.text = "Current Reward: " + reward.ToString();
     }
 
     private bool GetActionResult()
