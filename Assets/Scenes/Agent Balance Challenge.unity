@@ -922,6 +922,7 @@ MonoBehaviour:
   agent: {fileID: 1451575331}
   respawnPoint: {fileID: 1561386197}
   timerText: {fileID: 490049652}
+  rewardText: {fileID: 73178521}
 --- !u!4 &1382004963
 Transform:
   m_ObjectHideFlags: 0
@@ -988,7 +989,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19337df027c86dd4c90e54a3d1ee74c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardText: {fileID: 73178521}
 --- !u!114 &1451575331
 MonoBehaviour:
   m_ObjectHideFlags: 0

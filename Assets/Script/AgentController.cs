@@ -26,9 +26,7 @@ public class AgentController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 충돌 이벤트 처리 로직을 구현합니다.
-        // 땅과의 충돌이나 다른 객체와의 상호작용을 처리할 수 있습니다.
-        rewardSystem.AddReward(0.1f); // 충돌 시 0.1의 보상을 RewardSystem에 전달합니다.
+        rewardSystem.AddReward(0.1f); // 충돌 시 0.1의 보상을 RewardSystem에 전달
     }
 
     private void OnMove(InputValue value)   //InputSystem으로 키입력을 받는 함수
