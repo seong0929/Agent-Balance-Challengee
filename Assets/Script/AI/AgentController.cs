@@ -23,6 +23,26 @@ public class AgentController : MonoBehaviour
         Vector3 newPosition = rb.position + movement * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
     }
+    public void PerformAction(Action action)
+    {
+        // 수행할 행동에 따라 적절한 로직을 작성
+        if (action.actionName == "MoveForward")
+        {
+            transform.Translate(Vector3.forward * movementSpeed * Time.deltaTime);
+        }
+        else if (action.actionName == "MoveBackward")
+        {
+            transform.Translate(Vector3.back * movementSpeed * Time.deltaTime);
+        }
+        else if (action.actionName == "MoveLeft")
+        {
+            transform.Translate(Vector3.left * movementSpeed * Time.deltaTime);
+        }
+        else if (action.actionName == "MoveRight")
+        {
+            transform.Translate(Vector3.right * movementSpeed * Time.deltaTime);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
