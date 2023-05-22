@@ -1,4 +1,5 @@
 using UnityEngine;
+using QFunction;
 
 public class RewardSystem : MonoBehaviour
 {

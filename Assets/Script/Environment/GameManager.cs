@@ -2,32 +2,48 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using QFunction;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+
     public AgentController agent;    // 에이전트를 참조
     public Transform respawnPoint;   // 리스폰 지점을 설정
     public TMP_Text timerText;       // 타이머 UI
     public TMP_Text rewardText;      // 보상 UI
     public TMP_Text episodeText;    // 에피소드 번호를 표시할 UI
     public Button speedButton;       // 속도 변경 버튼
-    public Collider endCollider;     // 게임 종료를 위한 새로운 콜라이더
     public int currentEpisode = 0;   // 현재 에피소드 수
     public int maxEpisodes = 100;    // 최대 에피소드 수
     public float episodeDuration = 180f; // 에피소드 지속 시간 (초 단위)
+    //public TrainingData yourTrainingDataObject; // yourTrainingDataObject 변수를 선언
 
     private Dictionary<StateActionPair, float> qTable;  // Q 테이블
     private RewardSystem rewardSystem;  // 보상 참조
-    private GameObject tiltedGround;
+    private TiltedGround tiltedGround;  // 땅
     private float startTime;  // 에피소드 시작 시간
     private float episodeTime; // 현재 에피소드 경과 시간
     private float gameSpeed = 1f; // 게임 속도
-
+    private void Awake()
+    {
+        // instance가 null인 경우 현재 인스턴스를 할당
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            // 이미 다른 인스턴스가 존재하는 경우, 현재 인스턴스를 파괴
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
+        InitializeQTable();
         StartGame();
         speedButton.onClick.AddListener(ChangeGameSpeed);
-        tiltedGround = GameObject.Find("TiltedGround");
+        tiltedGround = FindObjectOfType<TiltedGround>();
     }
 
     private void Update()
@@ -43,13 +59,22 @@ public class GameManager : MonoBehaviour
             UpdateRewardUI();
 
             // 게임 종료 조건을 확인
-            if (endCollider && endCollider.bounds.Contains(agent.transform.position) || IsEpisodeTimeUp())
+            if (IsEpisodeTimeUp() || IsAgentFallen())
             {
                 EndGame();
             }
+            else
+            {
+                // 상태-행동 선택 및 수행
+                State currentState = GetState();
+                SelectAndPerformAction(currentState);
+            }
         }
     }
-
+    private bool IsAgentFallen()        // 땅과의 거리를 체크하여 에이전트가 땅 밖으로 떨어진 경우를 판단
+    {
+        return transform.position.y < -10f; // 땅으로부터 일정 거리 이하로 떨어졌을 경우 게임 오버
+    }
     public void StartGame()
     {
         // 게임 시작 시 초기화 작업을 수행
@@ -62,22 +87,29 @@ public class GameManager : MonoBehaviour
         currentEpisode++;
         if (currentEpisode > maxEpisodes)
         {
-            // 최대 에피소드 수에 도달하면 게임 종료 또는 다른 처리 수행
-            // 예: 학습 결과 저장, 게임 종료 등
+            // 최대 에피소드 수에 도달하면 게임 종료 및 학습 결과 저장
+            SaveTrainingResults();
+            return;
         }
 
         // UI에 에피소드 번호를 표시
         episodeText.text = "Episode: " + currentEpisode;
     }
-
-    public void EndGame()    // 게임 종료 시 처리할 작업을 수행
+    private void SaveTrainingResults()
+    {
+        // 학습 결과를 저장하는 로직을 구현
+        // PlayerPrefs.SetString("TrainingResults", JsonUtility.ToJson(yourTrainingDataObject));
+        // PlayerPrefs.Save();
+    }
+    
+    private void EndGame()  // 게임 종료 시 처리할 작업을 수행
     {
         // 에이전트를 비활성화
         agent.enabled = false;
 
         // 시간을 3분으로 초기화
-        episodeTime = 0f;
         startTime = Time.time;
+        episodeTime = 0f;
     }
 
     private bool IsEpisodeTimeUp()// 에피소드 시간이 지정된 지속 시간을 초과했는지 확인

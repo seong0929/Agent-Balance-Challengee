@@ -1,4 +1,6 @@
 using UnityEngine;
+using QFunction;
+using System.Collections.Generic;
 
 public class QTable
 {
